@@ -8,6 +8,11 @@ function kelvToCelc(kelv) {
     return (kelv - 273.15).toFixed(1);
 }
 
+// Print error message
+function printError(error) {
+    console.error(error.message);
+}
+
 // Print weather message
 function printWeather(obj) {
     console.log(`${
@@ -18,5 +23,6 @@ function printWeather(obj) {
 }
 
 module.exports = {
-    printWeather: printWeather
+    printWeather: printWeather,
+    printError: printError
 }

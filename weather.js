@@ -1,10 +1,11 @@
-// Assign https module
+// Assign https & http modules
 const https = require('https');
+const http = require('http');
 
-// Retrieve API key
+// API key
 const api = require('./api.json');
 
-// Require print functions
+// Print functions
 const print = require('./print');
 
 // Define search options
@@ -24,25 +25,50 @@ function get(args) {
   // Number check
   const params = isNumber(args);
 
-  const request = https.get(`https://api.openweathermap.org/data/2.5/weather?${params}=${args}&APPID=${api.key}`, response => {
+  try {
+    const request = https.get(`https://api.openweathermap.org/data/2.5/weather?${params}=${args}&APPID=${api.key}`, response => {
+      if (response.statusCode === 200) {
 
-    let body = "";
+        let body = "";
 
-    // Read data
-    response.on('data', chunk => {
-      body += chunk.toString();
+        // Read data
+        response.on('data', chunk => {
+          body += chunk.toString();
+        });
+
+        // After the response has ended
+        response.on('end', () => {
+
+          // Parse data
+          const weather = JSON.parse(body);
+          const country = weather.sys.country;
+
+          // Print data
+          if (country) {
+            print.printWeather(weather);
+          } else {
+            // Location not found error
+            print.printError(
+              new Error(`The location ${
+                country} was not found.`));
+          }
+        });
+
+      } else {
+        // Status code error
+        print.printError(
+          new Error(`There was an error getting the message for ${
+            args} (${
+              http.STATUS_CODES[response.statusCode]}).`));
+      }
     });
 
-    // After the response has ended
-    response.on('end', () => {
-      // Parse data
-      const weather = JSON.parse(body); console.dir(weather);
-      // Print data
-      print.printWeather(weather);
-    });
-  });
+    // Emitted error
+    request.on('error', print.printError);
+  } catch (error) {
+    // Malformed URL error
+    print.printError(error);
+  }
 }
 
 module.exports.get = get;
-
-//TODO: Handle any errors
