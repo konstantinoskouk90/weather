@@ -49,8 +49,7 @@ function get(args) {
           } else {
             // Location not found error
             print.printError(
-              new Error(`The location ${
-                country} was not found.`));
+              new Error(`The country specified was not found.`));
           }
         });
 
