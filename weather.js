@@ -47,9 +47,9 @@ function get(args) {
           if (country) {
             print.printWeather(weather);
           } else {
-            // Location not found error
+            // Country not found error
             print.printError(
-              new Error(`The country specified was not found.`));
+              new Error("The country specified was not found."));
           }
         });
 
